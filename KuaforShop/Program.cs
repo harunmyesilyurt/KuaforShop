@@ -1,4 +1,8 @@
+using KuaforShop.Setup;
+
 var builder = WebApplication.CreateBuilder(args);
+
+new Module(builder.Configuration).ConfigureServices(builder.Services);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

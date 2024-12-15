@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using KuaforShop.Models;
+using KuaforShop.Persistence.Repositories.User;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KuaforShop.Controllers
@@ -7,10 +8,12 @@ namespace KuaforShop.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IUserRepository _userRepository;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IUserRepository userRepository)
         {
             _logger = logger;
+            _userRepository = userRepository;
         }
 
         public IActionResult Index()
@@ -18,7 +21,7 @@ namespace KuaforShop.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        public async IActionResult Privacy()
         {
             return View();
         }
