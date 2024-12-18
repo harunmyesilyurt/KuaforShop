@@ -8,8 +8,8 @@ namespace KuaforShop.Core.Enumertaions
 {
     public enum enmRoles
     {
-        Standart = 0,
-        Employee = 1,
-        Manager = 2,
+        Admin = 1,
+        User = 2,
+        Employee = 3
     }
 }
