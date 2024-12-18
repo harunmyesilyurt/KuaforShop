@@ -10,6 +10,6 @@ namespace KuaforShop.Core.Enumertaions
     {
         Approved,
         Waiting,
-        Cencelled
+        Cancelled
     }
 }
