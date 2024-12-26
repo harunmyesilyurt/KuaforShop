@@ -3,9 +3,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using KuaforShop.Application.DTOs.AppointmentDTOs;
 using KuaforShop.Application.Services;
 using KuaforShop.Models;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace KuaforShop.Controllers
 {
+    [Authorize]
     public class AppointmentController : Controller
     {
         private readonly IAppointmentService _appointmentService;
@@ -25,6 +28,7 @@ namespace KuaforShop.Controllers
             _serviceService = serviceService;
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             var appointments = await _appointmentService.GetAllAsync();
@@ -42,49 +46,121 @@ namespace KuaforShop.Controllers
             return View(viewModels);
         }
 
-        public async Task<IActionResult> Create()
+        //public async Task<IActionResult> Create(Guid? saloonId)
+        //{
+        //    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //    var user = await _userService.GetByIdAsync(Guid.Parse(userId));
+
+        //    ViewBag.UserId = userId;
+
+        //    var employees = saloonId.HasValue ?
+        //        await _employeeService.GetBySaloonAsync(saloonId.Value) :
+        //        await _employeeService.GetAllAsync();
+        //    var services = saloonId.HasValue ?
+        //        await _serviceService.GetBySaloonAsync(saloonId.Value) :
+        //        await _serviceService.GetAllAsync();
+
+        //    ViewBag.Employees = new SelectList(employees, "Id", "Name");
+        //    ViewBag.Services = new SelectList(services, "Id", "Name");
+
+        //    return View();
+        //}
+        public async Task<IActionResult> Create(Guid? saloonId)
         {
-            await LoadSelectLists();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userService.GetByIdAsync(Guid.Parse(userId));
+
+            ViewBag.UserId = userId;
+
+            var employees = saloonId.HasValue ?
+                await _employeeService.GetBySaloonAsync(saloonId.Value) :
+                await _employeeService.GetAllAsync();
+            var services = saloonId.HasValue ?
+                await _serviceService.GetBySaloonAsync(saloonId.Value) :
+                await _serviceService.GetAllAsync();
+
+            ViewBag.ServicePrices = services.ToDictionary(s => s.Id.ToString(), s => s.Price);
+
+            ViewBag.Employees = new SelectList(employees, "Id", "Name");
+            ViewBag.Services = new SelectList(services, "Id", "Name");
+
+            // Hizmet fiyatlarını JSON formatında ViewBag'e ekleyin
+            ViewBag.ServicePrices = services.ToDictionary(s => s.Id.ToString(), s => s.Price);
+
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(CreateAppointmentDTO createAppointmentDTO)
         {
-            if (!ModelState.IsValid)
+            try
             {
+                if (!ModelState.IsValid)
+                {
+                    await LoadSelectLists();
+                    return View(createAppointmentDTO);
+                }
+
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                createAppointmentDTO.UserId = Guid.Parse(userId);
+
+                var result = await _appointmentService.CreateAsync(createAppointmentDTO);
+                if (!result)
+                {
+                    ModelState.AddModelError("", "Randevu oluşturulamadı. Lütfen seçtiğiniz tarih ve saati kontrol edin.");
+                    await LoadSelectLists();
+                    return View(createAppointmentDTO);
+                }
+
+                return RedirectToAction(nameof(MyAppointments));
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Bir hata oluştu: " + ex.Message);
                 await LoadSelectLists();
                 return View(createAppointmentDTO);
             }
+        }
 
-            // Çalışanın müsaitlik kontrolü
-            var isAvailable = await _appointmentService.IsEmployeeAvailableAsync(
-                createAppointmentDTO.EmployeeId,
-                createAppointmentDTO.Date,
-                30); // Varsayılan süre
+        public async Task<IActionResult> MyAppointments()
+        {
+            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var appointments = await _appointmentService.GetByUserAsync(userId);
 
-            if (!isAvailable)
+            var viewModels = appointments.Select(a => new AppointmentViewModel
             {
-                ModelState.AddModelError("", "Seçilen tarih ve saatte çalışan müsait değil.");
-                await LoadSelectLists();
-                return View(createAppointmentDTO);
-            }
+                Id = a.Id,
+                CustomerName = a.UserName,
+                ServiceName = a.ServiceName,
+                EmployeeName = a.EmployeeName,
+                AppointmentDate = a.Date,
+                Status = a.Status,
+                Price = (decimal)a.ServicePrice
+            }).ToList();
 
-            await _appointmentService.CreateAsync(createAppointmentDTO);
+            return View(viewModels);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateStatus(Guid id, int status)
+        {
+            await _appointmentService.UpdateStatusAsync(id, (Core.Enumertaions.enmAppointmentStatus)status);
             return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Cancel(Guid id)
         {
-            await _appointmentService.CancelAsync(id);
-            return RedirectToAction(nameof(Index));
-        }
+            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var appointment = await _appointmentService.GetByIdAsync(id);
 
-        [HttpPost]
-        public async Task<IActionResult> UpdateStatus(Guid id, int status)
-        {
-            await _appointmentService.UpdateStatusAsync(id, (Core.Enumertaions.enmAppointmentStatus)status);
-            return RedirectToAction(nameof(Index));
+            if (appointment == null || appointment.UserId != userId)
+            {
+                return Forbid();
+            }
+
+            await _appointmentService.CancelAsync(id);
+            return RedirectToAction(nameof(MyAppointments));
         }
 
         public async Task<IActionResult> GetAvailableTimeSlots(Guid employeeId, DateTime date)
@@ -93,13 +169,18 @@ namespace KuaforShop.Controllers
             return Json(slots);
         }
 
-        private async Task LoadSelectLists()
+        private async Task LoadSelectLists(Guid? saloonId = null)
         {
-            var users = await _userService.GetAllAsync();
-            var employees = await _employeeService.GetAllAsync();
-            var services = await _serviceService.GetAllAsync();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            ViewBag.UserId = userId;
 
-            ViewBag.Users = new SelectList(users, "Id", "Username");
+            var employees = saloonId.HasValue ?
+                await _employeeService.GetBySaloonAsync(saloonId.Value) :
+                await _employeeService.GetAllAsync();
+            var services = saloonId.HasValue ?
+                await _serviceService.GetBySaloonAsync(saloonId.Value) :
+                await _serviceService.GetAllAsync();
+
             ViewBag.Employees = new SelectList(employees, "Id", "Name");
             ViewBag.Services = new SelectList(services, "Id", "Name");
         }

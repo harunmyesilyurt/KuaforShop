@@ -1,9 +1,11 @@
-﻿using KuaforShop.Application.DTOs.EmployeeDTOs;
-using KuaforShop.Application.Services;
-using KuaforShop.Application.Services.Employee;
-using KuaforShop.Application.Services.Saloon;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using KuaforShop.Application.DTOs.EmployeeDTOs;
+using KuaforShop.Application.Services;
+using KuaforShop.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
+using KuaforShop.Application.DTOs.SaloonDTOs;
+using KuaforShop.Core.Entities;
 
 namespace KuaforShop.Controllers
 {
@@ -54,15 +56,28 @@ namespace KuaforShop.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(Guid id, CreateEmployeeDTO updateEmployeeDTO)
+        public async Task<IActionResult> Edit(Guid id, EmployeeDTO updateEmployeeDTO)
         {
-            if (!ModelState.IsValid)
-            {
-                await LoadSaloonSelectList();
-                return View(updateEmployeeDTO);
-            }
+            if (id != updateEmployeeDTO.Id)
+                return NotFound();
 
-            await _employeeService.UpdateAsync(id, updateEmployeeDTO);
+            if (!ModelState.IsValid)
+                return View(updateEmployeeDTO);
+
+            var createDTO = new CreateEmployeeDTO
+            {
+                Name = updateEmployeeDTO.Name,
+                Surname = updateEmployeeDTO.Surname,
+                Sex = updateEmployeeDTO.Sex,
+                SaloonId = updateEmployeeDTO.SaloonId,
+                BeginTime = updateEmployeeDTO.BeginTime,
+                EndTime = updateEmployeeDTO.EndTime,
+                WorkDays = updateEmployeeDTO.WorkDays,
+                Username = updateEmployeeDTO.Username, // Bu satırı ekleyin
+                                                       // Expertise = updateEmployeeDTO.Expertise
+            };
+
+            await _employeeService.UpdateAsync(id, createDTO);
             return RedirectToAction(nameof(Index));
         }
 
