@@ -3,6 +3,7 @@ using KuaforShop.Models;
 using KuaforShop.Application.Services;
 using KuaforShop.Core.Enumertaions;
 using Microsoft.AspNetCore.Mvc;
+using KuaforShop.Application.Utils;
 
 namespace KuaforShop.Controllers
 {
@@ -10,30 +11,31 @@ namespace KuaforShop.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IAppointmentService _appointmentService;
+        private readonly IUserService _userService;
 
         public HomeController(
             ILogger<HomeController> logger,
-            IAppointmentService appointmentService)
+            IAppointmentService appointmentService,
+            IUserService userService)
         {
             _logger = logger;
             _appointmentService = appointmentService;
+            _userService = userService;
         }
 
         public async Task<IActionResult> Index()
         {
-            var appointments = await _appointmentService.GetAllAsync();
+            var viewModel = new DashboardViewModel();
 
-            var viewModel = new DashboardViewModel
+            if (User.IsInRole("Admin"))
             {
-                TotalAppointments = appointments.Count,
-                PendingAppointments = appointments.Count(a => a.Status == enmAppointmentStatus.Waiting),
-                CompletedAppointments = appointments.Count(a => a.Status == enmAppointmentStatus.Approved),
-                CancelledAppointments = appointments.Count(a => a.Status == enmAppointmentStatus.Cencelled),
-                TotalRevenue = appointments
-                    .Where(a => a.Status == enmAppointmentStatus.Approved)
-                    .Sum(a => (decimal)a.ServicePrice),
-                UpcomingAppointments = appointments
-                    .Where(a => a.Date > DateTime.Now && a.Status != enmAppointmentStatus.Cencelled)
+                var appointments = await _appointmentService.GetAllAsync();
+
+                viewModel.TotalUsers = await _userService.GetTotalUsersAsync();
+                viewModel.TotalAppointments = await _appointmentService.GetTotalAppointmentsAsync();
+                viewModel.TodaysAppointments = await _appointmentService.GetTodaysAppointmentsCountAsync();
+                viewModel.TotalRevenue = await _appointmentService.GetTotalRevenueAsync();
+                viewModel.RecentAppointments = (await _appointmentService.GetRecentAppointmentsAsync(5))
                     .Select(a => new AppointmentViewModel
                     {
                         Id = a.Id,
@@ -43,25 +45,17 @@ namespace KuaforShop.Controllers
                         AppointmentDate = a.Date,
                         Status = a.Status,
                         Price = (decimal)a.ServicePrice
-                    })
-                    .Take(5)
-                    .ToList(),
-                TodaysAppointments = appointments
-                    .Where(a => a.Date.Date == DateTime.Today)
-                    .Select(a => new AppointmentViewModel
-                    {
-                        Id = a.Id,
-                        CustomerName = a.UserName,
-                        ServiceName = a.ServiceName,
-                        EmployeeName = a.EmployeeName,
-                        AppointmentDate = a.Date,
-                        Status = a.Status,
-                        Price = (decimal)a.ServicePrice
-                    })
-                    .ToList()
-            };
+                    }).ToList();
+            }
 
             return View(viewModel);
+        }
+
+        public IActionResult Tetikle()
+        {
+            var a = new AIHelper();
+            var b = Task.Run(async () => await a.CreateHair("")).Result;
+            return View("ok");
         }
 
         public IActionResult Privacy()

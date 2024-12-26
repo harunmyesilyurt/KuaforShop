@@ -1,9 +1,8 @@
-﻿using KuaforShop.Application.DTOs.ServiceDTOs;
-using KuaforShop.Application.Services;
-using KuaforShop.Application.Services.Saloon;
-using KuaforShop.Application.Services.Service;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using KuaforShop.Application.DTOs.ServiceDTOs;
+using KuaforShop.Application.Services;
+using KuaforShop.Models;
 
 namespace KuaforShop.Controllers
 {
