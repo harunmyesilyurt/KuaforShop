@@ -1,11 +1,27 @@
 using KuaforShop.Setup;
+using KuaforShop.Application;
+using KuaforShop.Persistence;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
-new Module(builder.Configuration).ConfigureServices(builder.Services);
-
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Persistence ve Application servislerini ekle
+builder.Services.AddApplicationServices();
+builder.Services.AddPersistenceServices();
+
+// Module'ü ekle (DbContext için)
+new Module(builder.Configuration).ConfigureServices(builder.Services);
+
+// Authentication ekle
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+    });
 
 var app = builder.Build();
 
@@ -22,10 +38,12 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}"
+);
 
 app.Run();

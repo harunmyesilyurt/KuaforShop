@@ -1,0 +1,98 @@
+﻿@model KuaforShop.Models.UserProfileViewModel
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title mb-4">Profil Bilgileri</h3>
+
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+                    }
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+                    }
+
+                    <form asp-action="Profile" method="post">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Username" class="form-label"></label>
+                                    <input asp-for="Username" class="form-control" />
+                                    <span asp-validation-for="Username" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="Email" class="form-label"></label>
+                                    <input asp-for="Email" class="form-control" />
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="Phone" class="form-label"></label>
+                                    <input asp-for="Phone" class="form-control" />
+                                    <span asp-validation-for="Phone" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Sex" class="form-label"></label>
+                                    <select asp-for="Sex" class="form-control">
+                                        <option value="false">Kadın</option>
+                                        <option value="true">Erkek</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="PreferredSaloonId" class="form-label"></label>
+                                    <select asp-for="PreferredSaloonId" asp-items="ViewBag.Saloons" class="form-control">
+                                        <option value="">Seçiniz</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-check mb-3">
+                                    <input asp-for="NotificationEnabled" class="form-check-input" type="checkbox" />
+                                    <label asp-for="NotificationEnabled" class="form-check-label"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Kaydet</button>
+                    </form>
+
+                    <hr class="my-4" />
+
+                    <h4>Şifre Değiştir</h4>
+                    <form asp-action="ChangePassword" method="post">
+                        <div class="form-group mb-3">
+                            <label for="CurrentPassword" class="form-label">Mevcut Şifre</label>
+                            <input type="password" class="form-control" id="CurrentPassword" name="CurrentPassword" required />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="NewPassword" class="form-label">Yeni Şifre</label>
+                            <input type="password" class="form-control" id="NewPassword" name="NewPassword" required />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="ConfirmPassword" class="form-label">Yeni Şifre Tekrar</label>
+                            <input type="password" class="form-control" id="ConfirmPassword" name="ConfirmPassword" required />
+                        </div>
+
+                        <button type="submit" class="btn btn-warning">Şifre Değiştir</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+} 

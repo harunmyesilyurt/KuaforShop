@@ -1,0 +1,42 @@
+﻿@model KuaforShop.Application.DTOs.UserDTOs.CreateUserDTO
+
+<h2>Kayıt Ol</h2>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Register">
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="Username">Kullanıcı Adı</label>
+                <input asp-for="Username" class="form-control" />
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password">Şifre</label>
+                <input asp-for="Password" type="password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ConfirmPassword">Şifre Tekrar</label>
+                <input asp-for="ConfirmPassword" type="password" class="form-control" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Sex">Cinsiyet</label>
+                <select asp-for="Sex" class="form-control">
+                    <option value="false">Kadın</option>
+                    <option value="true">Erkek</option>
+                </select>
+                <span asp-validation-for="Sex" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-3">
+                <button type="submit" class="btn btn-primary">Kayıt Ol</button>
+            </div>
+        </form>
+    </div>
+</div> 

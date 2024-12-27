@@ -1,0 +1,57 @@
+﻿@model KuaforShop.Application.DTOs.AppointmentDTOs.CreateAppointmentDTO
+
+<h2>Yeni Randevu</h2>
+
+<form asp-action="Create">
+    <input type="hidden" asp-for="UserId" value="@ViewBag.UserId" />
+
+    <div class="form-group">
+        <label asp-for="ServiceId">Hizmet</label>
+        <select asp-for="ServiceId" asp-items="ViewBag.Services" class="form-control" id="serviceDropdown">
+            <option value="">Hizmet Seçiniz</option>
+        </select>
+        <span asp-validation-for="ServiceId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Hizmet Bedeli</label>
+        <input type="text" id="priceDisplay" class="form-control" readonly />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="EmployeeId">Çalışan</label>
+        <select asp-for="EmployeeId" asp-items="ViewBag.Employees" class="form-control">
+            <option value="">Çalışan Seçiniz</option>
+        </select>
+        <span asp-validation-for="EmployeeId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Date">Tarih</label>
+        <input asp-for="Date" type="datetime-local" class="form-control" />
+        <span asp-validation-for="Date" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+    <a asp-action="MyAppointments" class="btn btn-secondary">İptal</a>
+</form>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const serviceDropdown = document.getElementById("serviceDropdown");
+            const priceDisplay = document.getElementById("priceDisplay");
+            const servicePrices = @Html.Raw(Json.Serialize(ViewBag.ServicePrices));
+
+            serviceDropdown.addEventListener("change", function () {
+                const selectedServiceId = this.value;
+                const price = servicePrices[selectedServiceId];
+                priceDisplay.value = price !== undefined ? price : "";
+            });
+        });
+    </script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+} 

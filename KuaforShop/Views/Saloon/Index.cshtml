@@ -1,0 +1,39 @@
+﻿@model IEnumerable<KuaforShop.Application.DTOs.SaloonDTOs.SaloonDTO>
+
+<h2>Salonlar</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Yeni Salon</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Salon Adı</th>
+            <th>Adres</th>
+            <th>Telefon</th>
+            <th>Açılış Saati</th>
+            <th>Kapanış Saati</th>
+            <th>Çalışma Günleri</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var saloon in Model)
+        {
+            <tr>
+                <td>@saloon.Name</td>
+                <td>@saloon.Address</td>
+                <td>@saloon.Phone</td>
+                <td>@saloon.OpenTime.ToString("HH:mm")</td>
+                <td>@saloon.CloseTime.ToString("HH:mm")</td>
+                <td>@saloon.WorkDays</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@saloon.Id" class="btn btn-warning">Düzenle</a>
+                    <a asp-action="Delete" asp-route-id="@saloon.Id" class="btn btn-danger"
+                       onclick="return confirm('Silmek istediğinize emin misiniz?')">Sil</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table> 

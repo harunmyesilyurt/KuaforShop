@@ -1,0 +1,69 @@
+﻿@model KuaforShop.Models.AdminDashboardViewModel
+
+<h2>Admin Dashboard</h2>
+
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Toplam Kullanıcı</h5>
+                <p class="card-text h2">@Model.TotalUsers</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Toplam Randevu</h5>
+                <p class="card-text h2">@Model.TotalAppointments</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">Bugünkü Randevular</h5>
+                <p class="card-text h2">@Model.TodaysAppointments</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <h5 class="card-title">Toplam Gelir</h5>
+                <p class="card-text h2">@Model.TotalRevenue.ToString("C2")</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h3>Son Randevular</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Müşteri</th>
+                    <th>Hizmet</th>
+                    <th>Çalışan</th>
+                    <th>Tarih</th>
+                    <th>Durum</th>
+                    <th>Fiyat</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var appointment in Model.RecentAppointments)
+                {
+                    <tr>
+                        <td>@appointment.UserName</td>
+                        <td>@appointment.ServiceName</td>
+                        <td>@appointment.EmployeeName</td>
+                        <td>@appointment.Date.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@appointment.Status</td>
+                        <td>@appointment.ServicePrice.ToString("C2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div> 

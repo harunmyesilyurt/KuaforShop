@@ -1,0 +1,43 @@
+﻿@model KuaforShop.Application.DTOs.ServiceDTOs.ServiceDTO
+@using KuaforShop.Core.Enumertaions
+
+<h2>Hizmeti Düzenle</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="SaloonId">Salon</label>
+        <select asp-for="SaloonId" asp-items="ViewBag.Saloons" class="form-control">
+            <option value="">Salon Seçiniz</option>
+        </select>
+        <span asp-validation-for="SaloonId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Name">Hizmet Adı</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Price">Fiyat</label>
+        <input asp-for="Price" type="number" step="0.01" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Duration">Süre</label>
+        <input asp-for="Duration" type="number" class="form-control" />
+        <span asp-validation-for="Duration" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="DurationType">Süre Tipi</label>
+        <select asp-for="DurationType" asp-items="Html.GetEnumSelectList<enmDurationType>()" class="form-control"></select>
+        <span asp-validation-for="DurationType" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Güncelle</button>
+    <a asp-action="Index" class="btn btn-secondary">İptal</a>
+</form>
