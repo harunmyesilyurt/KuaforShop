@@ -1,0 +1,59 @@
+﻿@model KuaforShop.Application.DTOs.UserDTOs.CreateUserDTO
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title mb-4">Kullanıcı Düzenle</h3>
+
+                    <form asp-action="Edit" method="post">
+                        <div class="form-group mb-3">
+                            <label asp-for="Username" class="form-label">Kullanıcı Adı</label>
+                            <input asp-for="Username" class="form-control" />
+                            <span asp-validation-for="Username" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Sex" class="form-label">Cinsiyet</label>
+                            <select asp-for="Sex" class="form-control">
+                                <option value="false">Kadın</option>
+                                <option value="true">Erkek</option>
+                            </select>
+                        </div>
+
+                        @* <div class="form-group mb-3"> *@
+                        @*     <label asp-for="Role" class="form-label">Rol</label> *@
+                        @*     <select asp-for="Role" asp-items="Html.GetEnumSelectList<KuaforShop.Core.Enumertaions.enmRoles>()" class="form-control"> *@
+                        @*     </select> *@
+                        @*     <span asp-validation-for="Role" class="text-danger"></span> *@
+                        @* </div> *@
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Password" class="form-label">Şifre</label>
+                            <input asp-for="Password" type="password" class="form-control" placeholder="Değiştirmek istemiyorsanız boş bırakın" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="ConfirmPassword" class="form-label">Şifre Tekrar</label>
+                            <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Değiştirmek istemiyorsanız boş bırakın" />
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-primary">Kaydet</button>
+                            <a asp-action="Index" class="btn btn-secondary">İptal</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+} 

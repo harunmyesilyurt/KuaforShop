@@ -1,0 +1,86 @@
+﻿@model KuaforShop.Application.DTOs.EmployeeDTOs.CreateEmployeeDTO
+@using KuaforShop.Core.Enumertaions
+
+<h2>Yeni Çalışan</h2>
+
+<form asp-action="Create">
+    <div class="form-group">
+        <label asp-for="Username">Kullanıcı Adı</label>
+        <input asp-for="Username" class="form-control" />
+        <span asp-validation-for="Username" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Password">Şifre</label>
+        <input asp-for="Password" type="password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="ConfirmPassword">Şifre Tekrar</label>
+        <input asp-for="ConfirmPassword" type="password" class="form-control" />
+        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Name">Ad</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Surname">Soyad</label>
+        <input asp-for="Surname" class="form-control" />
+        <span asp-validation-for="Surname" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Sex">Cinsiyet</label>
+        <select asp-for="Sex" class="form-control">
+            <option value="false">Kadın</option>
+            <option value="true">Erkek</option>
+        </select>
+        <span asp-validation-for="Sex" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="SaloonId">Salon</label>
+        <select asp-for="SaloonId" asp-items="ViewBag.Saloons" class="form-control">
+            <option value="">Salon Seçiniz</option>
+        </select>
+        <span asp-validation-for="SaloonId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Role">Rol</label>
+        <select asp-for="Role" asp-items="Html.GetEnumSelectList<enmRoles>()" class="form-control"></select>
+        <span asp-validation-for="Role" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="BeginTime">Başlangıç Saati</label>
+        <input asp-for="BeginTime" type="time" class="form-control" />
+        <span asp-validation-for="BeginTime" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="EndTime">Bitiş Saati</label>
+        <input asp-for="EndTime" type="time" class="form-control" />
+        <span asp-validation-for="EndTime" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="WorkDays">Çalışma Günleri</label>
+        <select asp-for="WorkDays" asp-items="Html.GetEnumSelectList<enmWorkDays>()" class="form-control"></select>
+        <span asp-validation-for="WorkDays" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Expertise">Uzmanlık Alanları (Virgülle ayırarak yazınız)</label>
+        <input asp-for="Expertise" class="form-control" />
+        <span asp-validation-for="Expertise" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+    <a asp-action="Index" class="btn btn-secondary">İptal</a>
+</form> 

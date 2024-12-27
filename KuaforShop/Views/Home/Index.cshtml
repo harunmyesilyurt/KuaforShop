@@ -1,8 +1,168 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model DashboardViewModel
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@if (User.IsInRole("Admin"))
+{
+    <h2>Admin Dashboard</h2>
+
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">Toplam Kullanıcı</h5>
+                    <p class="card-text h2">@Model.TotalUsers</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">Toplam Randevu</h5>
+                    <p class="card-text h2">@Model.TotalAppointments</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h5 class="card-title">Bugünkü Randevular</h5>
+                    <p class="card-text h2">@Model.TodaysAppointments</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">Toplam Gelir</h5>
+                    <p class="card-text h2">@Model.TotalRevenue.ToString("C2")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h3>Son Randevular</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Müşteri</th>
+                        <th>Hizmet</th>
+                        <th>Çalışan</th>
+                        <th>Tarih</th>
+                        <th>Durum</th>
+                        <th>Fiyat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var appointment in Model.RecentAppointments)
+                    {
+                        <tr>
+                            <td>@appointment.CustomerName</td>
+                            <td>@appointment.ServiceName</td>
+                            <td>@appointment.EmployeeName</td>
+                            <td>@appointment.AppointmentDate.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@appointment.Status</td>
+                            <td>@appointment.Price.ToString("C2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+else
+{
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center mb-5">
+                <h1 class="display-4">Kuaför Randevu Sistemine Hoş Geldiniz</h1>
+                <p class="lead">Size en yakın kuaför salonunu seçin ve hemen randevu alın!</p>
+            </div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-cut fa-3x mb-3 text-primary"></i>
+                        <h3 class="card-title">Profesyonel Hizmet</h3>
+                        <p class="card-text">Deneyimli kuaförlerimizle size en iyi hizmeti sunuyoruz.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-calendar-alt fa-3x mb-3 text-success"></i>
+                        <h3 class="card-title">Kolay Randevu</h3>
+                        <p class="card-text">Online randevu sistemi ile dilediğiniz zaman randevunuzu alın.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-clock fa-3x mb-3 text-warning"></i>
+                        <h3 class="card-title">Zaman Tasarrufu</h3>
+                        <p class="card-text">Sıra beklemeden, size uygun saatte hizmet alın.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+
+        <div class="row">
+            <div class="col-md-6 offset-md-3 text-center">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <a asp-controller="Saloon" asp-action="List" class="btn btn-primary btn-lg">
+                        Hemen Randevu Al
+                    </a>
+                }
+                else
+                {
+                    <div>
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg me-3">
+                            Giriş Yap
+                        </a>
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-success btn-lg">
+                            Kayıt Ol
+                        </a>
+                    </div>
+                }
+                <div class="row mb-4 mt-1">
+                   
+                        <form asp-action="UploadImage" method="post" enctype="multipart/form-data" class="mb-4">
+                            <div class="form-group">
+                                <label for="image" class="form-label">Yüz Şeklini ve Uyan Saç Modelleri Görmek İster misin ?</label>
+                                <br />
+                            <label for="image" class="form-label">Yüz Resmini Yükle:</label>
+                                <input type="file" name="image" accept="image/jpeg" required class="form-control" />
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-3">Gönder</button>
+                        </form>
+                    
+                </div>
+
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success mt-3">
+                        @TempData["Success"]
+                        <br />
+                        @if (TempData["Suggestions"] != null)
+                        {
+                            <strong>Öneriler:</strong> @TempData["Suggestions"]
+                        }
+                    </div>
+                }
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger mt-3">
+                        @TempData["Error"]
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}

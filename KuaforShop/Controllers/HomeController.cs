@@ -4,6 +4,8 @@ using KuaforShop.Application.Services;
 using KuaforShop.Core.Enumertaions;
 using Microsoft.AspNetCore.Mvc;
 using KuaforShop.Application.Utils;
+using Microsoft.AspNetCore.Http;
+using System.Net.Http.Headers;
 
 namespace KuaforShop.Controllers
 {
@@ -51,11 +53,79 @@ namespace KuaforShop.Controllers
             return View(viewModel);
         }
 
-        public IActionResult Tetikle()
+        //[HttpPost]
+        [HttpPost]
+        public async Task<IActionResult> Tetikle(IFormFile file)
         {
-            var a = new AIHelper();
-            var b = Task.Run(async () => await a.CreateHair("")).Result;
-            return View("ok");
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("Geçersiz dosya!");
+            }
+
+            try
+            {
+                using var memoryStream = new MemoryStream();
+                await file.CopyToAsync(memoryStream);
+                var fileBytes = memoryStream.ToArray();
+
+                // Burada API'ye POST isteði gönderiyoruz
+                var client = new HttpClient();
+                var content = new MultipartFormDataContent
+        {
+            { new ByteArrayContent(fileBytes), "file", file.FileName }
+        };
+
+                var apiResponse = await client.PostAsync("https://api-url/your-endpoint", content);
+
+                if (apiResponse.IsSuccessStatusCode)
+                {
+                    var apiResult = await apiResponse.Content.ReadAsStringAsync();
+                    return Ok(new { message = "Baþarýlý", result = apiResult });
+                }
+                else
+                {
+                    var error = await apiResponse.Content.ReadAsStringAsync();
+                    return StatusCode((int)apiResponse.StatusCode, error);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Sunucu hatasý: {ex.Message}");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadImage(IFormFile image)
+        {
+            if (image == null || image.Length == 0)
+            {
+                ModelState.AddModelError("", "Lütfen bir resim yükleyin.");
+                return View("Index"); 
+            }
+
+            using var httpClient = new HttpClient();
+            using var formData = new MultipartFormDataContent();
+
+            // Resmi ekle
+            using var stream = new MemoryStream();
+            await image.CopyToAsync(stream);
+            var content = new ByteArrayContent(stream.ToArray());
+            content.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+            formData.Add(content, "image", image.FileName);
+
+            // API isteði gönder
+            var response = await httpClient.PostAsync("http://node-js-faceshape.onrender.com/api/ai", formData);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                return View("Result", jsonResponse); 
+            }
+            else
+            {
+                ModelState.AddModelError("", "API isteði baþarýsýz oldu.");
+                return View("Index"); 
+            }
         }
 
         public IActionResult Privacy()

@@ -1,0 +1,63 @@
+﻿@model KuaforShop.Application.DTOs.SaloonDTOs.SaloonDTO
+@using KuaforShop.Core.Enumertaions
+
+<h2>Salon Düzenle</h2>
+
+<form asp-action="Edit">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="Name">Salon Adı</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Address">Adres</label>
+        <textarea asp-for="Address" class="form-control"></textarea>
+        <span asp-validation-for="Address" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Phone">Telefon</label>
+        <input asp-for="Phone" class="form-control" />
+        <span asp-validation-for="Phone" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="OpenTime">Açılış Saati</label>
+        <input asp-for="OpenTime" type="time" class="form-control" />
+        <span asp-validation-for="OpenTime" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="CloseTime">Kapanış Saati</label>
+        <input asp-for="CloseTime" type="time" class="form-control" />
+        <span asp-validation-for="CloseTime" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="WorkDays">Çalışma Günleri</label>
+        <select asp-for="WorkDays" asp-items="Html.GetEnumSelectList<enmWorkDays>()" class="form-control">
+        </select>
+        <span asp-validation-for="WorkDays" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="SaloonType">Salon Tipi</label>
+        <select asp-for="SaloonType" asp-items="@(Html.GetEnumSelectList<enmSaloonType>())" class="form-control">
+        </select>
+        <span asp-validation-for="SaloonType" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mt-3">
+        <button type="submit" class="btn btn-primary">Kaydet</button>
+        <a asp-action="Index" class="btn btn-secondary">İptal</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+} 
