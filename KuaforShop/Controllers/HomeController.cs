@@ -53,46 +53,46 @@ namespace KuaforShop.Controllers
             return View(viewModel);
         }
 
+        ////[HttpPost]
         //[HttpPost]
-        [HttpPost]
-        public async Task<IActionResult> Tetikle(IFormFile file)
-        {
-            if (file == null || file.Length == 0)
-            {
-                return BadRequest("Geçersiz dosya!");
-            }
+        //public async Task<IActionResult> Tetikle(IFormFile file)
+        //{
+        //    if (file == null || file.Length == 0)
+        //    {
+        //        return BadRequest("Geçersiz dosya!");
+        //    }
 
-            try
-            {
-                using var memoryStream = new MemoryStream();
-                await file.CopyToAsync(memoryStream);
-                var fileBytes = memoryStream.ToArray();
+        //    try
+        //    {
+        //        using var memoryStream = new MemoryStream();
+        //        await file.CopyToAsync(memoryStream);
+        //        var fileBytes = memoryStream.ToArray();
 
-                // Burada API'ye POST isteði gönderiyoruz
-                var client = new HttpClient();
-                var content = new MultipartFormDataContent
-        {
-            { new ByteArrayContent(fileBytes), "file", file.FileName }
-        };
+        //        // Burada API'ye POST isteði gönderiyoruz
+        //        var client = new HttpClient();
+        //        var content = new MultipartFormDataContent
+        //{
+        //    { new ByteArrayContent(fileBytes), "file", file.FileName }
+        //};
 
-                var apiResponse = await client.PostAsync("https://api-url/your-endpoint", content);
+        //        var apiResponse = await client.PostAsync("https://api-url/your-endpoint", content);
 
-                if (apiResponse.IsSuccessStatusCode)
-                {
-                    var apiResult = await apiResponse.Content.ReadAsStringAsync();
-                    return Ok(new { message = "Baþarýlý", result = apiResult });
-                }
-                else
-                {
-                    var error = await apiResponse.Content.ReadAsStringAsync();
-                    return StatusCode((int)apiResponse.StatusCode, error);
-                }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Sunucu hatasý: {ex.Message}");
-            }
-        }
+        //        if (apiResponse.IsSuccessStatusCode)
+        //        {
+        //            var apiResult = await apiResponse.Content.ReadAsStringAsync();
+        //            return Ok(new { message = "Baþarýlý", result = apiResult });
+        //        }
+        //        else
+        //        {
+        //            var error = await apiResponse.Content.ReadAsStringAsync();
+        //            return StatusCode((int)apiResponse.StatusCode, error);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, $"Sunucu hatasý: {ex.Message}");
+        //    }
+        //}
 
         [HttpPost]
         public async Task<IActionResult> UploadImage(IFormFile image)

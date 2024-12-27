@@ -79,16 +79,20 @@ namespace KuaforShop.Controllers
                 await _serviceService.GetBySaloonAsync(saloonId.Value) :
                 await _serviceService.GetAllAsync();
 
+            // ViewBag ile hizmet fiyatlarını ve çalışan saatlerini aktar
             ViewBag.ServicePrices = services.ToDictionary(s => s.Id.ToString(), s => s.Price);
+            ViewBag.EmployeeHours = employees.ToDictionary(
+                e => e.Id.ToString(),
+                e => $"{e.BeginTime.ToString(@"hh\:mm")} - {e.EndTime.ToString(@"hh\:mm")}"
+            );
+
 
             ViewBag.Employees = new SelectList(employees, "Id", "Name");
             ViewBag.Services = new SelectList(services, "Id", "Name");
 
-            // Hizmet fiyatlarını JSON formatında ViewBag'e ekleyin
-            ViewBag.ServicePrices = services.ToDictionary(s => s.Id.ToString(), s => s.Price);
-
             return View();
         }
+
 
         [HttpPost]
         public async Task<IActionResult> Create(CreateAppointmentDTO createAppointmentDTO)
