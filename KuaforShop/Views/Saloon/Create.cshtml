@@ -46,11 +46,7 @@
         <span asp-validation-for="SaloonType" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label asp-for="MyProperty">MyProperty</label>
-        <input asp-for="MyProperty" class="form-control" />
-        <span asp-validation-for="MyProperty" class="text-danger">11</span>
-    </div>
+    <input asp-for="MyProperty" type="hidden" value="1" />
 
     <button type="submit" class="btn btn-primary">Kaydet</button>
     <a asp-action="Index" class="btn btn-secondary">İptal</a>

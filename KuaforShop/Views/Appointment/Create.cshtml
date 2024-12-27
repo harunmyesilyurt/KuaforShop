@@ -20,10 +20,15 @@
 
     <div class="form-group">
         <label asp-for="EmployeeId">Çalışan</label>
-        <select asp-for="EmployeeId" asp-items="ViewBag.Employees" class="form-control">
+        <select asp-for="EmployeeId" asp-items="ViewBag.Employees" class="form-control" id="employeeDropdown">
             <option value="">Çalışan Seçiniz</option>
         </select>
         <span asp-validation-for="EmployeeId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Çalışma Saatleri</label>
+        <input type="text" id="hoursDisplay" class="form-control" readonly />
     </div>
 
     <div class="form-group">
@@ -48,10 +53,18 @@
                 const price = servicePrices[selectedServiceId];
                 priceDisplay.value = price !== undefined ? price : "";
             });
+
+            const employeeDropdown = document.getElementById("employeeDropdown");
+            const hoursDisplay = document.getElementById("hoursDisplay");
+            const employeeHours = @Html.Raw(Json.Serialize(ViewBag.EmployeeHours));
+
+            employeeDropdown.addEventListener("change", function () {
+                const selectedEmployeeId = this.value;
+                const hours = employeeHours[selectedEmployeeId];
+                hoursDisplay.value = hours !== undefined ? hours : "Çalışma saatleri bulunamadı.";
+            });
         });
     </script>
 
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-} 
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

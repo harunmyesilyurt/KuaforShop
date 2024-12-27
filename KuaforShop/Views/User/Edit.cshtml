@@ -7,7 +7,7 @@
                 <div class="card-body">
                     <h3 class="card-title mb-4">Kullanıcı Düzenle</h3>
 
-                    <form asp-action="Edit" method="post">
+                    <form asp-action="Edit" method="post" id="userEditForm">
                         <div class="form-group mb-3">
                             <label asp-for="Username" class="form-label">Kullanıcı Adı</label>
                             <input asp-for="Username" class="form-control" />
@@ -21,13 +21,6 @@
                                 <option value="true">Erkek</option>
                             </select>
                         </div>
-
-                        @* <div class="form-group mb-3"> *@
-                        @*     <label asp-for="Role" class="form-label">Rol</label> *@
-                        @*     <select asp-for="Role" asp-items="Html.GetEnumSelectList<KuaforShop.Core.Enumertaions.enmRoles>()" class="form-control"> *@
-                        @*     </select> *@
-                        @*     <span asp-validation-for="Role" class="text-danger"></span> *@
-                        @* </div> *@
 
                         <div class="form-group mb-3">
                             <label asp-for="Password" class="form-label">Şifre</label>
@@ -56,4 +49,18 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-} 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#userEditForm').on('submit', function (e) {
+                var password = $('input[name="Password"]').val();
+                var confirmPassword = $('input[name="ConfirmPassword"]').val();
+
+                if (password !== confirmPassword) {
+                    e.preventDefault(); // Formun gönderilmesini engelle
+                    alert('Şifreler eşleşmiyor. Lütfen kontrol edin.'); // Uyarı mesajı
+                }
+            });
+        });
+    </script>
+}
